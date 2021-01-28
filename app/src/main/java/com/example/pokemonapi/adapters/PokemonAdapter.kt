@@ -4,10 +4,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pokemonapi.Classes.Pokemon
+import java.io.File
 
 class PokemonAdapter(private val dataSet: Array<Pokemon>): RecyclerView.Adapter<PokemonAdapter.ViewHolder>() {
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         init {
+
               TODO("Not yet implemented")
         }
     }
@@ -22,4 +24,10 @@ class PokemonAdapter(private val dataSet: Array<Pokemon>): RecyclerView.Adapter<
 
     // return the size of data set
     override fun getItemCount(): Int = dataSet.size
+
+    fun readPokemonFile() {
+        val reader = File("")
+
+
+    }
 }
