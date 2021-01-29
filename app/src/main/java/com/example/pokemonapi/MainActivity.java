@@ -6,10 +6,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.util.Log;
-import android.view.View;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,67 +19,99 @@ import me.sargunvohra.lib.pokekotlin.client.PokeApiClient;
 import me.sargunvohra.lib.pokekotlin.model.NamedApiResource;
 
 public class MainActivity extends AppCompatActivity {
-
-    private String url = "https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20";
+    //pokemon list
     public List<Pokemon2> pokemonList;
+    //adapter for showing each pokemon
+    private PokemonAdapter pokemonAdapter;
+    //page offset
+    private int offset;
+    //recycler view
+    RecyclerView recyclerView;
+    //search bar
+    EditText searchBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (android.os.Build.VERSION.SDK_INT > 9) {
-            StrictMode.ThreadPolicy policy =
-                    new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-        }
-
         //run background network thread
         pokemonList = new ArrayList<>();
         getPokemonList.run();
 
+        //default offset
+        offset = 0;
+
         //adapter
-        PokemonAdapter pokemonAdapter = new PokemonAdapter(pokemonList);
+        pokemonAdapter = new PokemonAdapter(pokemonList);
 
         //recycler view
-        //recycler view and adapter
-        RecyclerView recyclerView = findViewById(R.id.pokemonView);
+        recyclerView = findViewById(R.id.pokemonView);
         recyclerView.hasFixedSize();
-        recyclerView.setAdapter(pokemonAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        setRecyclerView(); //set recycler view.
 
-        //buttons
-        //buttons
-        Button nextButton = findViewById(R.id.nextButton);
-        nextButton.setOnClickListener(new View.OnClickListener() {
+        //search bar
+        searchBar = findViewById(R.id.searchBar);
+        searchBar.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v) {
-                //get offset number
-                int offset = getOffset(url);
-                //math for new offset
-                int newOffset = offset + 20;
-                //update the URL with new off set
-                updateURL(offset, newOffset);
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                pokemonList.clear();
+                searchPokemonList.run();
+                setRecyclerView();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        //next and previous page buttons
+        Button nextButton = findViewById(R.id.nextButton);
+        nextButton.setOnClickListener(v -> {
+            offset += 20; //add 20 to the offset
+            pokemonList.clear(); //clear existing list
+            getPokemonList.run(); //get list
+            setRecyclerView(); //add list to view
         });
         Button previousButton = findViewById(R.id.previousButton);
-        previousButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //get offset number
-                int offset = (int) getOffset(url);
-                //math for new offset
-                int newOffset = offset - 20;
-                //ensure the user does not go into the minuses
-                if (newOffset < 0) {
-                    Toast.makeText(MainActivity.this, "You are already on the 1st page.", Toast.LENGTH_SHORT).show();
-                } else {
-                    //update the URL with new off set
-                    updateURL(offset, newOffset);
-                }
-            }
+        previousButton.setOnClickListener(v -> {
+            offset -= 20; //minus 20 to the offset
+            pokemonList.clear(); //clear existing list
+            getPokemonList.run(); //get list
+            setRecyclerView(); //add list to view
         });
     }
+
+    Thread searchPokemonList = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            try {
+                //pokemon wrapper
+                PokeApi pokeApi = new PokeApiClient();
+                List<NamedApiResource> list = pokeApi.getPokemonList(0, 1000).getResults();
+                for (int i = 0; i <= list.size(); i++) {
+                    Pokemon2 pokemon = new Pokemon2();
+
+                    //get pokemon from API list and create pokemon object, pass that into List<Pokemon>
+                    if(list.get(i).getName().contains(searchBar.getText())) {
+                        pokemon.setName(list.get(i).getName());
+                        pokemon.setCategory(list.get(i).getCategory());
+                        pokemon.setId(list.get(i).getId());
+                        pokemonList.add(pokemon);
+                    }
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    });
+
 
     Thread getPokemonList = new Thread(new Runnable() {
         @Override
@@ -87,8 +119,8 @@ public class MainActivity extends AppCompatActivity {
             try {
                 //pokemon wrapper
                 PokeApi pokeApi = new PokeApiClient();
-                List<NamedApiResource> list = pokeApi.getPokemonList(20,20).getResults();
-                for(int i = 0; i <= list.size(); i++) {
+                List<NamedApiResource> list = pokeApi.getPokemonList(offset, 20).getResults();
+                for (int i = 0; i <= list.size(); i++) {
                     Pokemon2 pokemon = new Pokemon2();
 
                     //get pokemon from API list and create pokemon object, pass that into List<Pokemon>
@@ -104,39 +136,19 @@ public class MainActivity extends AppCompatActivity {
         }
     });
 
-    private void getAPI() {
-
+    private void setRecyclerView() {
+        recyclerView.setAdapter(pokemonAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private void updateURL(int offset, int newOffset) {
-        //to String
-        String target = "offset=" + offset;
-        String replacement = "offset=" + newOffset;
-        //replace offset
-        url = url.replace(target, replacement);
-        Log.i("URL", url);
-    }
-
-    public static int getOffset(final CharSequence input) {
-        //case input to String Builder
-        final StringBuilder sb = new StringBuilder(input);
-        //find offset keyword for start of loop
-        int start = sb.indexOf("offset");
-        //find limit word for stop loop
-        int limit = sb.indexOf("limit");
-        //new string for StringBuilder for digits
-        StringBuilder digits = new StringBuilder();
-
-        //find digits
-        for (int i = start; i < limit; i++) {
-            final char c = input.charAt(i);
-            if (c > 47 && c < 58) {
-                digits.append(c);
-            }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //Permit threads for network activity if version is newer than version 9
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy =
+                    new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
         }
-
-        //cast string to integer for math and return
-        return Integer.parseInt(digits.toString());
     }
-
 }
