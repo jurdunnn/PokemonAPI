@@ -1,32 +1,56 @@
 package com.example.pokemonapi;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import org.jetbrains.annotations.NotNull;
-
+import java.util.ArrayList;
 import java.util.List;
+
+import me.sargunvohra.lib.pokekotlin.client.PokeApi;
+import me.sargunvohra.lib.pokekotlin.client.PokeApiClient;
+import me.sargunvohra.lib.pokekotlin.model.NamedApiResource;
 
 public class MainActivity extends AppCompatActivity {
 
     private String url = "https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20";
-
-    //buttons
-    private Button nextButton;
-    private Button previousButton;
+    public List<Pokemon2> pokemonList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy =
+                    new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
 
-        nextButton = findViewById(R.id.nextButton);
+        //run background network thread
+        pokemonList = new ArrayList<>();
+        getPokemonList.run();
+
+        //adapter
+        PokemonAdapter pokemonAdapter = new PokemonAdapter(pokemonList);
+
+        //recycler view
+        //recycler view and adapter
+        RecyclerView recyclerView = findViewById(R.id.pokemonView);
+        recyclerView.hasFixedSize();
+        recyclerView.setAdapter(pokemonAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        //buttons
+        //buttons
+        Button nextButton = findViewById(R.id.nextButton);
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -34,15 +58,11 @@ public class MainActivity extends AppCompatActivity {
                 int offset = getOffset(url);
                 //math for new offset
                 int newOffset = offset + 20;
-                //to String
-                String target = "offset=" + offset;
-                String replacement = "offset=" + newOffset;
-                //replace offset
-                url = url.replace(target, replacement);
-                Log.i("URL", url);
+                //update the URL with new off set
+                updateURL(offset, newOffset);
             }
         });
-        previousButton = findViewById(R.id.previousButton);
+        Button previousButton = findViewById(R.id.previousButton);
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,20 +70,51 @@ public class MainActivity extends AppCompatActivity {
                 int offset = (int) getOffset(url);
                 //math for new offset
                 int newOffset = offset - 20;
-                //to String
-                String target = "offset=" + offset;
-                String replacement = "offset=" + newOffset;
                 //ensure the user does not go into the minuses
-                if(newOffset < 0) {
+                if (newOffset < 0) {
                     Toast.makeText(MainActivity.this, "You are already on the 1st page.", Toast.LENGTH_SHORT).show();
                 } else {
-                    //replace offset
-                    url = url.replace(target, replacement);
-                    Log.i("URL", url);
+                    //update the URL with new off set
+                    updateURL(offset, newOffset);
                 }
             }
         });
+    }
 
+    Thread getPokemonList = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            try {
+                //pokemon wrapper
+                PokeApi pokeApi = new PokeApiClient();
+                List<NamedApiResource> list = pokeApi.getPokemonList(20,20).getResults();
+                for(int i = 0; i <= list.size(); i++) {
+                    Pokemon2 pokemon = new Pokemon2();
+
+                    //get pokemon from API list and create pokemon object, pass that into List<Pokemon>
+                    pokemon.setName(list.get(i).getName());
+                    pokemon.setCategory(list.get(i).getCategory());
+                    pokemon.setId(list.get(i).getId());
+
+                    pokemonList.add(pokemon);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    });
+
+    private void getAPI() {
+
+    }
+
+    private void updateURL(int offset, int newOffset) {
+        //to String
+        String target = "offset=" + offset;
+        String replacement = "offset=" + newOffset;
+        //replace offset
+        url = url.replace(target, replacement);
+        Log.i("URL", url);
     }
 
     public static int getOffset(final CharSequence input) {
