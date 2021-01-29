@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -97,9 +98,8 @@ public class PokemonStatistics extends AppCompatActivity {
 
         //tr and get url content using input stream
         try {
-            assert myUrl != null;
-            inputStream = (InputStream) myUrl.getContent();
-        } catch (IOException e) {
+                inputStream = (InputStream) myUrl.getContent();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

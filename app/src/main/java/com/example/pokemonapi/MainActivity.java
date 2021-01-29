@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 //pokemon wrapper
                 PokeApi pokeApi = new PokeApiClient();
-                List<NamedApiResource> list = pokeApi.getPokemonList(0, 1000).getResults();
+                List<NamedApiResource> list = pokeApi.getPokemonList(0, 10200).getResults();
                 for (int i = 0; i <= list.size(); i++) {
                     Pokemon2 pokemon = new Pokemon2();
 
