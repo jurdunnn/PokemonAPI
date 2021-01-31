@@ -8,7 +8,7 @@
     <br/>4. Enable install unsafe apps
     <br/>5. Run the app!
     
-<br/><br/># Versions
-    <br/> <h2>Version 0.1
+<br/><br/><h1>Versions</h1>
+    <br/> <h2>Version 0.1</h2>
     <br/> APK executable: [pokemonAPI.apk](https://github.com/jurdunnn/PokemonAPI/releases/download/0.1/pokemonAPI.apk)
     <br/> Source-code:[pokemonAPI.zip](https://github.com/jurdunnn/PokemonAPI/archive/0.1.zip)
