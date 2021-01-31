@@ -10,7 +10,6 @@
     <br/>5. Run the app!
     
 <br/><br/><h1>Versions
-    <br/> <h2>Version 0.1<h2>
+    <br/> <h2>Version 0.1
     <br/> APK executable: [pokemonAPI.apk](https://github.com/jurdunnn/PokemonAPI/releases/download/0.1/pokemonAPI.apk)
     <br/> Source-code:[pokemonAPI.zip](https://github.com/jurdunnn/PokemonAPI/archive/0.1.zip)
-    <h1>
