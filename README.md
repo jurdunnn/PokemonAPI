@@ -11,7 +11,7 @@
 <br/><br/><h1>Versions</h1>
     <h2>Version 0.1
     <h3>
-    <br/> APK executable: [pokemonAPI.apk](https://github.com/jurdunnn/PokemonAPI/releases/download/0.1/pokemonAPI.apk)
+    APK executable: [pokemonAPI.apk](https://github.com/jurdunnn/PokemonAPI/releases/download/0.1/pokemonAPI.apk)
     <br/> Source-code:[pokemonAPI.zip](https://github.com/jurdunnn/PokemonAPI/archive/0.1.zip)
     </h3>
     </h2>
