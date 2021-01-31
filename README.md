@@ -5,7 +5,7 @@
     <br/>1. Ensure no older versions of this app are installed on tablet or smart phone.
     <br/>2. Download desired version of the apk on to a smart phone or tabelt.
     <br/>3. Click on the apk file either in the notifications bar or in downloads folder.
-    <br/>4. Enable install unsafe apps
+    <br/>4. Ignore not verified app warning
     <br/>5. Run the app!
     
 <br/><br/><h1>Versions</h1>
