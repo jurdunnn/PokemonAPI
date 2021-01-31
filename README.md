@@ -10,4 +10,5 @@
     <br/>5. Run the app!
     
 <br/><br/><h1>Versions<h1>
-["72 hr release" - 0.1](https://github.com/jurdunnn/PokemonAPI/releases/download/0.1/pokemonAPI.apk)
+[pokemonAPI.0.1 APK - 72 hour release](https://github.com/jurdunnn/PokemonAPI/releases/download/0.1/pokemonAPI.apk)
+[pokemonAPI.0.1 Source code - 72 hour release](https://github.com/jurdunnn/PokemonAPI/releases/download/0.1/pokemonAPI.apk)
