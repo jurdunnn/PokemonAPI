@@ -1,7 +1,6 @@
 # PokemonAPI
 
 <br/>Welcome to my Pokemon API app!
-
 <br/>Install instructions:
     <br/>1. Ensure no older versions of this app are installed on tablet or smart phone.
     <br/>2. Download desired version of the apk on to a smart phone or tabelt.
